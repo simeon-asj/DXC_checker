@@ -116,6 +116,13 @@ body.dark #popup{background:var(--card-dark);}
 .highlight-row{ background:rgba(220,38,38,.25)!important; }
 .footer{ text-align:center; margin-top:40px; opacity:.7; font-size:13px; }
 #popupTitle { text-transform: uppercase; font-weight: bold; }
+
+/* Simple filter input styling */
+.filter-row input {
+  width:100%; box-sizing:border-box; padding:8px; border-radius:6px; border:1px solid #cbd5e1;
+  background:transparent; color:inherit;
+}
+body.dark .filter-row input { border-color:#444; }
 </style>
 </head>
 <body>
@@ -169,7 +176,10 @@ body.dark #popup{background:var(--card-dark);}
 
 <script>
 let data1=null, data2=null, highlightedRow=null;
-const histMap={}, dateMap={};
+const histMap={}, dateMap={}, sbuMap={};
+let fullRows = []; // all mismatch rows before filtering
+let filteredRows = []; // rows after applying filters
+
 function norm(s){return (s||"").toString().toLowerCase().replace(/\s+/g," ").trim();}
 
 // Correct Excel serial → JS Date conversion
@@ -215,13 +225,16 @@ function handleFile(f,is1,cb){
     if(!js){alert(`Missing required columns in ${f.name}`);return;}
     const mapped=js.map(row=>{
       if(is1){
-        const t=row["HO IT TICKET #"]||row["Ho IT Ticket #"]||row["HO IT Ticket"]||row["HO IT Ticket No."]||"";
-        const hist=row["Historical Remarks"]||row["HISTORICAL REMARKS"]||"";
-        const date=excelDateToJS(row["LAST UPDATE"]||row["Last Update"]);
-        if(t){ histMap[t]=hist; dateMap[t]=date||""; }
-        return { TASK:t, STATUS:row["CALL STATUS"]||row["Call Status"], CLOSED_BY:row["CLOSED BY"]||row["Closed By"]||"" };
+        // Extract TASK and other fields. Also extract STORE CODE into SBU.
+        const t=row["HO IT TICKET #"]||row["Ho IT Ticket #"]||row["HO IT Ticket"]||row["HO IT Ticket No."]||row["HO IT TICKET"]||row["Ho IT Ticket"]||"";
+        const hist=row["Historical Remarks"]||row["HISTORICAL REMARKS"]||row["Historical remarks"]||"";
+        const date=excelDateToJS(row["LAST UPDATE"]||row["Last Update"]||row["Last updated"]||"");
+        // STORE CODE header variants (confirmed header is "STORE CODE")
+        const storeCode = row["STORE CODE"]||row["Store Code"]||row["STORECODE"]||row["StoreCode"]||"";
+        if(t){ histMap[t]=hist; dateMap[t]=date||""; sbuMap[t]=storeCode||""; }
+        return { TASK:t, STATUS:row["CALL STATUS"]||row["Call Status"]||row["CALLSTATUS"]||"", CLOSED_BY:row["CLOSED BY"]||row["Closed By"]||"", SBU: storeCode||"" };
       } else {
-        return { TASK:row["NUMBER"]||row["Number"], STATUS:row["STATE"]||row["State"], CREATED:row["CREATED"]||row["Created"]||row["Opened"]||"" };
+        return { TASK:row["NUMBER"]||row["Number"]||row["number"]||"", STATUS:row["STATE"]||row["State"]||row["status"]||"", CREATED:row["CREATED"]||row["Created"]||row["Opened"]||"" };
       }
     });
     cb(mapped,f.name);
@@ -258,6 +271,7 @@ document.getElementById("compare").onclick=()=>{
       if(s1!==s2)
         mism.push({
           TASK:t,
+          SBU: m1[t].SBU || "",
           "STATUS File1":m1[t].STATUS,
           "STATUS File2":m2[t].status,
           "CLOSED BY":m1[t].CLOSED_BY,
@@ -269,20 +283,88 @@ document.getElementById("compare").onclick=()=>{
   const extra=[];
   data2.forEach(r=>{
     if(!m1[r.TASK] && ["work in progress","pending"].some(t=>norm(r.STATUS).includes(t)))
-      extra.push({ TASK:r.TASK, "STATUS File1":"—", "STATUS File2":r.STATUS, "CLOSED BY":"", DATE:"" });
+      extra.push({ TASK:r.TASK, SBU:"", "STATUS File1":"—", "STATUS File2":r.STATUS, "CLOSED BY":"", DATE:"" });
   });
-  showResults(closed.concat(extra));
+  const combined = closed.concat(extra);
+  fullRows = combined.slice(); // store all rows (unfiltered)
+  filteredRows = fullRows.slice();
+  showResults(filteredRows);
 };
+
+function createFilterRow(headers){
+  const tr = document.createElement("tr");
+  tr.className = "filter-row";
+  headers.forEach(h=>{
+    const th = document.createElement("th");
+    // create input
+    const inp = document.createElement("input");
+    inp.setAttribute("placeholder", "Filter...");
+    inp.addEventListener("input", applyFiltersDebounced);
+    th.appendChild(inp);
+    tr.appendChild(th);
+  });
+  return tr;
+}
+
+let filterTimeout = null;
+function applyFiltersDebounced(){
+  if(filterTimeout) clearTimeout(filterTimeout);
+  filterTimeout = setTimeout(()=>{ applyFilters(); filterTimeout=null; }, 150);
+}
+
+function applyFilters(){
+  const table = document.querySelector("#results table");
+  if(!table) return;
+  const inputs = table.querySelectorAll(".filter-row input");
+  const filters = Array.from(inputs).map(i => norm(i.value));
+  // columns order in showResults: TASK, SBU, HELPDESK, DXC, CLOSED BY, CLOSED DATE, ACTION TAKEN
+  filteredRows = fullRows.filter(row=>{
+    // map row to array of comparable strings
+    const vals = [
+      norm(row.TASK||""),
+      norm(row.SBU||""),
+      norm(row["STATUS File1"]||""),
+      norm(row["STATUS File2"]||""),
+      norm(row["CLOSED BY"]||""),
+      norm(row.DATE||""),
+      "" // action taken column doesn't have a data string to filter; leave empty
+    ];
+    // test each filter: filter value must be contained in corresponding val
+    for(let i=0;i<filters.length;i++){
+      if(filters[i] && !vals[i].includes(filters[i])) return false;
+    }
+    return true;
+  });
+  // re-render results with filteredRows
+  renderResultsTable(filteredRows);
+  // update downloadable rows to filteredRows
+  window.mismatchRows = filteredRows;
+  document.getElementById("download").disabled = filteredRows.length === 0;
+}
 
 function showResults(rows){
   const res=document.getElementById("results"); res.innerHTML="";
-  if(!rows.length){ res.textContent="ALL TICKET FROM HELPDESK WAS CLOSED."; return; }
+  if(!rows.length){ res.textContent="ALL TICKET FROM HELPDESK WAS CLOSED."; window.mismatchRows = []; document.getElementById("download").disabled=true; return; }
+  renderResultsTable(rows);
+  window.mismatchRows = rows;
+  document.getElementById("download").disabled=false;
+}
+
+function renderResultsTable(rows){
+  const res=document.getElementById("results"); res.innerHTML="";
   const tbl=document.createElement("table");
-  tbl.innerHTML="<thead><tr><th>TASK</th><th>HELPDESK</th><th>DXC</th><th>CLOSED BY</th><th>CLOSED DATE</th><th>ACTION TAKEN</th></tr></thead>";
+  // Headers: TASK, SBU, HELPDESK, DXC, CLOSED BY, CLOSED DATE, ACTION TAKEN
+  tbl.innerHTML="<thead><tr><th>TASK</th><th>SBU</th><th>HELPDESK</th><th>DXC</th><th>CLOSED BY</th><th>CLOSED DATE</th><th>ACTION TAKEN</th></tr></thead>";
   const tb=document.createElement("tbody");
+  // insert filter row under the header
+  const thead = tbl.querySelector("thead");
+  const headers = ["TASK","SBU","HELPDESK","DXC","CLOSED BY","CLOSED DATE","ACTION TAKEN"];
+  const filterRow = createFilterRow(headers);
+  thead.appendChild(filterRow);
+
   rows.forEach(r=>{
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${r.TASK}</td><td>${r["STATUS File1"]}</td><td>${r["STATUS File2"]}</td>
+    tr.innerHTML=`<td>${r.TASK}</td><td>${r.SBU||""}</td><td>${r["STATUS File1"]}</td><td>${r["STATUS File2"]}</td>
                   <td>${r["CLOSED BY"]}</td><td>${r.DATE||""}</td>
                   <td><button class="btn-primary" onclick="showRemarks('${encodeURIComponent(r.TASK)}',this)">View</button></td>`;
     tb.appendChild(tr);
@@ -291,7 +373,9 @@ function showResults(rows){
   const total=document.createElement("div");
   total.style.marginTop="10px"; total.style.fontWeight="600";
   total.textContent=`Total Tasks: ${rows.length}`; res.appendChild(total);
-  window.mismatchRows=rows; document.getElementById("download").disabled=false;
+  // ensure filter inputs start empty
+  const inputs = tbl.querySelectorAll(".filter-row input");
+  inputs.forEach(i=>i.value="");
 }
 
 function showRemarks(task,btn){
@@ -314,18 +398,33 @@ document.getElementById("popupCloseTop").onclick=hidePopup;
 
 document.getElementById("download").onclick=()=>{
   if(!window.mismatchRows?.length) return;
-  const ws=XLSX.utils.json_to_sheet(window.mismatchRows);
+  // create export-friendly rows (exclude action column & include SBU)
+  const exportRows = window.mismatchRows.map(r=>{
+    return {
+      TASK: r.TASK,
+      SBU: r.SBU || "",
+      "STATUS File1": r["STATUS File1"] || "",
+      "STATUS File2": r["STATUS File2"] || "",
+      "CLOSED BY": r["CLOSED BY"] || "",
+      "CLOSED DATE": r.DATE || ""
+    };
+  });
+  const ws=XLSX.utils.json_to_sheet(exportRows);
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"Closed_Mismatches");
   XLSX.writeFile(wb,"closed_mismatches.xlsx");
 };
 document.getElementById("clear").onclick=()=>{
-  data1=data2=null; window.mismatchRows=null;
+  data1=data2=null; window.mismatchRows=null; fullRows=[]; filteredRows=[];
   document.getElementById("drop1").textContent="Drop Jollibee Revised Excel here or click";
   document.getElementById("drop2").textContent="Drop DXC Excel here or click";
   document.getElementById("results").innerHTML="";
   document.getElementById("compare").disabled=true;
   document.getElementById("download").disabled=true;
+  // clear maps
+  for(const k in histMap) delete histMap[k];
+  for(const k in dateMap) delete dateMap[k];
+  for(const k in sbuMap) delete sbuMap[k];
 };
 
 const toggle = document.getElementById("toggle");
@@ -338,5 +437,3 @@ toggle.addEventListener("change", () => {
 </script>
 </body>
 </html>
-
-
