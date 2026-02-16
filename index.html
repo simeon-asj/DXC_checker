@@ -47,6 +47,32 @@
   66% { transform: translate(-10px, 10px) scale(0.95); }
 }
 
+/* Floating Particles */
+.particle {
+  position: absolute;
+  background: rgba(220, 38, 38, 0.3);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float 15s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(50px);
+    opacity: 0;
+  }
+}
+
 .login-container {
   background: rgba(30, 30, 30, 0.85);
   backdrop-filter: blur(10px);
@@ -66,14 +92,71 @@
   font-size: 28px;
   font-weight: 700;
   letter-spacing: 2px;
+  min-height: 40px;
 }
 
-.login-title .red-text {
+.login-title .typing-text {
+  display: inline-block;
+  overflow: hidden;
+  border-right: 3px solid #dc2626;
+  white-space: nowrap;
+  animation: typing 3s steps(30) 1s 1 normal both, blink 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.8;
+}
+
+.glitch::before {
+  animation: glitch-1 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
   color: #dc2626;
+  z-index: -1;
+}
+
+.glitch::after {
+  animation: glitch-2 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse infinite;
+  color: #6b7280;
+  z-index: -2;
+}
+
+@keyframes glitch-1 {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+
+@keyframes glitch-2 {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(2px, -2px); }
+  40% { transform: translate(2px, 2px); }
+  60% { transform: translate(-2px, -2px); }
+  80% { transform: translate(-2px, 2px); }
 }
 
 .input-group {
   margin-bottom: 20px;
+  position: relative;
 }
 
 .input-group label {
@@ -96,11 +179,46 @@
   box-sizing: border-box;
 }
 
+.input-group input[type="password"] {
+  padding-right: 45px;
+}
+
 .input-group input:focus {
   outline: none;
   border-color: #dc2626;
   background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 38px;
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 18px;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.password-toggle:hover {
+  color: #dc2626;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  color: #d1d5db;
+  font-size: 13px;
+}
+
+.remember-me input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #dc2626;
 }
 
 .login-btn {
@@ -115,11 +233,40 @@
   cursor: pointer;
   transition: all 0.3s;
   margin-top: 10px;
+  position: relative;
 }
 
-.login-btn:hover {
+.login-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+}
+
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-btn .spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin: 0 auto;
+}
+
+.login-btn.loading .spinner {
+  display: block;
+}
+
+.login-btn.loading .btn-text {
+  display: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .login-error {
@@ -128,6 +275,13 @@
   text-align: center;
   margin-top: 15px;
   display: none;
+  animation: shake 0.4s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
 }
 
 /* Main App Styles */
@@ -249,7 +403,9 @@ body.dark .filter-row input { border-color:#444; }
 <div id="loginPage">
   <div class="login-container">
     <div class="login-title">
-      <span class="red-text">HD</span> ↔ <span class="red-text">DXC</span>
+      <span class="typing-text">
+        <span class="glitch" data-text="HD ↔ DXC">HD ↔ DXC</span>
+      </span>
     </div>
     <form id="loginForm" onsubmit="return handleLogin(event)">
       <div class="input-group">
@@ -259,8 +415,16 @@ body.dark .filter-row input { border-color:#444; }
       <div class="input-group">
         <label>PASSWORD</label>
         <input type="password" id="password" autocomplete="current-password" required>
+        <span class="password-toggle" onclick="togglePassword()">👁️</span>
       </div>
-      <button type="submit" class="login-btn">LOGIN</button>
+      <div class="remember-me">
+        <input type="checkbox" id="rememberMe">
+        <label for="rememberMe" style="cursor:pointer; margin:0;">Remember Me</label>
+      </div>
+      <button type="submit" class="login-btn" id="loginBtn">
+        <span class="btn-text">LOGIN</span>
+        <div class="spinner"></div>
+      </button>
       <div class="login-error" id="loginError">Invalid username or password</div>
     </form>
   </div>
@@ -312,24 +476,82 @@ body.dark .filter-row input { border-color:#444; }
   </div>
 </div>
 
-<p class="footer">DXC CHECKER&nbsp;1.0.4 &nbsp; © 2025, Arvin Jusay</p>
+<p class="footer">DXC CHECKER&nbsp;1.0.5 &nbsp; © 2025, Arvin Jusay</p>
 </div>
 
 <script>
+// Create floating particles
+function createParticles() {
+  const loginPage = document.getElementById('loginPage');
+  for (let i = 0; i < 15; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    const size = Math.random() * 4 + 2;
+    particle.style.width = size + 'px';
+    particle.style.height = size + 'px';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.bottom = '-20px';
+    particle.style.animationDelay = Math.random() * 15 + 's';
+    particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+    loginPage.appendChild(particle);
+  }
+}
+createParticles();
+
+// Toggle Password Visibility
+function togglePassword() {
+  const passwordInput = document.getElementById('password');
+  const toggle = document.querySelector('.password-toggle');
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    toggle.textContent = '🙈';
+  } else {
+    passwordInput.type = 'password';
+    toggle.textContent = '👁️';
+  }
+}
+
+// Check for saved login on page load
+window.addEventListener('load', () => {
+  const remembered = localStorage.getItem('rememberedUser');
+  if (remembered === 'arvin') {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+  }
+});
+
 // Login Logic
 function handleLogin(event) {
   event.preventDefault();
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
+  const rememberMe = document.getElementById('rememberMe').checked;
   const errorMsg = document.getElementById('loginError');
+  const loginBtn = document.getElementById('loginBtn');
   
-  if (username === 'arvin' && password === 'asjarvin') {
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'block';
-    errorMsg.style.display = 'none';
-  } else {
-    errorMsg.style.display = 'block';
-  }
+  // Show loading spinner
+  loginBtn.classList.add('loading');
+  loginBtn.disabled = true;
+  
+  // Simulate loading delay
+  setTimeout(() => {
+    if (username === 'arvin' && password === 'asjarvin') {
+      // Save to localStorage if Remember Me is checked
+      if (rememberMe) {
+        localStorage.setItem('rememberedUser', username);
+      } else {
+        localStorage.removeItem('rememberedUser');
+      }
+      
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'block';
+      errorMsg.style.display = 'none';
+    } else {
+      errorMsg.style.display = 'block';
+      loginBtn.classList.remove('loading');
+      loginBtn.disabled = false;
+    }
+  }, 1000);
   
   return false;
 }
