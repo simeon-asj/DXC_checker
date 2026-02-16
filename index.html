@@ -16,6 +16,121 @@
   --danger:#dc2626;
   --danger-dark:#b91c1c;
 }
+
+/* Login Page Styles */
+#loginPage {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#loginPage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 30%, rgba(220, 38, 38, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(107, 114, 128, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(220, 38, 38, 0.08) 0%, transparent 60%);
+  animation: smokeMove 20s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes smokeMove {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(10px, -10px) scale(1.05); }
+  66% { transform: translate(-10px, 10px) scale(0.95); }
+}
+
+.login-container {
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 16px;
+  padding: 40px;
+  width: 90%;
+  max-width: 380px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+.login-title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.login-title .red-text {
+  color: #dc2626;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  color: #d1d5db;
+  font-size: 13px;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  transition: all 0.3s;
+  box-sizing: border-box;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #dc2626;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 10px;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+}
+
+.login-error {
+  color: #fca5a5;
+  font-size: 13px;
+  text-align: center;
+  margin-top: 15px;
+  display: none;
+}
+
+/* Main App Styles */
 body{
   font-family:"Segoe UI",Tahoma,Verdana,sans-serif;
   background:var(--bg-light);
@@ -117,16 +232,42 @@ body.dark #popup{background:var(--card-dark);}
 .footer{ text-align:center; margin-top:40px; opacity:.7; font-size:13px; }
 #popupTitle { text-transform: uppercase; font-weight: bold; }
 
-/* Simple filter input styling */
 .filter-row input {
   width:100%; box-sizing:border-box; padding:8px; border-radius:6px; border:1px solid #cbd5e1;
   background:transparent; color:inherit;
 }
 body.dark .filter-row input { border-color:#444; }
+
+#mainApp {
+  display: none;
+}
 </style>
 </head>
 <body>
 
+<!-- Login Page -->
+<div id="loginPage">
+  <div class="login-container">
+    <div class="login-title">
+      <span class="red-text">HD</span> ↔ <span class="red-text">DXC</span>
+    </div>
+    <form id="loginForm" onsubmit="return handleLogin(event)">
+      <div class="input-group">
+        <label>USERNAME</label>
+        <input type="text" id="username" autocomplete="username" required>
+      </div>
+      <div class="input-group">
+        <label>PASSWORD</label>
+        <input type="password" id="password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="login-btn">LOGIN</button>
+      <div class="login-error" id="loginError">Invalid username or password</div>
+    </form>
+  </div>
+</div>
+
+<!-- Main Application -->
+<div id="mainApp">
 <div class="top-bar">
   <span id="modeText" class="mode-label">Switch to Dark Mode</span>
   <label class="theme-switch">
@@ -159,7 +300,6 @@ body.dark .filter-row input { border-color:#444; }
 
 <div id="results"></div>
 
-<!-- Popup -->
 <div id="overlay"></div>
 <div id="popup">
   <div id="popupHeader">
@@ -173,20 +313,38 @@ body.dark .filter-row input { border-color:#444; }
 </div>
 
 <p class="footer">DXC CHECKER&nbsp;1.0.4 &nbsp; © 2025, Arvin Jusay</p>
+</div>
 
 <script>
+// Login Logic
+function handleLogin(event) {
+  event.preventDefault();
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  const errorMsg = document.getElementById('loginError');
+  
+  if (username === 'arvin' && password === 'asjarvin') {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    errorMsg.style.display = 'none';
+  } else {
+    errorMsg.style.display = 'block';
+  }
+  
+  return false;
+}
+
+// Main Application Code
 let data1=null, data2=null, highlightedRow=null;
 const histMap={}, dateMap={}, sbuMap={};
-let fullRows = []; // all mismatch rows before filtering
-let filteredRows = []; // rows after applying filters
+let fullRows = [];
+let filteredRows = [];
 
 function norm(s){return (s||"").toString().toLowerCase().replace(/\s+/g," ").trim();}
 
-// Correct Excel serial → JS Date conversion
 function excelDateToJS(serial) {
   if (serial == null || serial === "") return "";
   if (typeof serial === "number") {
-    // Excel's epoch: 1900-01-01; Excel incorrectly treats 1900 as leap year
     const excelEpoch = new Date(Date.UTC(1899,11,30));
     const days = Math.floor(serial);
     const msPerDay = 24*60*60*1000;
@@ -225,11 +383,9 @@ function handleFile(f,is1,cb){
     if(!js){alert(`Missing required columns in ${f.name}`);return;}
     const mapped=js.map(row=>{
       if(is1){
-        // Extract TASK and other fields. Also extract STORE CODE into SBU.
         const t=row["HO IT TICKET #"]||row["Ho IT Ticket #"]||row["HO IT Ticket"]||row["HO IT Ticket No."]||row["HO IT TICKET"]||row["Ho IT Ticket"]||"";
         const hist=row["Historical Remarks"]||row["HISTORICAL REMARKS"]||row["Historical remarks"]||"";
         const date=excelDateToJS(row["LAST UPDATE"]||row["Last Update"]||row["Last updated"]||"");
-        // STORE CODE header variants (confirmed header is "STORE CODE")
         const storeCode = row["STORE CODE"]||row["Store Code"]||row["STORECODE"]||row["StoreCode"]||"";
         if(t){ histMap[t]=hist; dateMap[t]=date||""; sbuMap[t]=storeCode||""; }
         return { TASK:t, STATUS:row["CALL STATUS"]||row["Call Status"]||row["CALLSTATUS"]||"", CLOSED_BY:row["CLOSED BY"]||row["Closed By"]||"", SBU: storeCode||"" };
@@ -286,7 +442,7 @@ document.getElementById("compare").onclick=()=>{
       extra.push({ TASK:r.TASK, SBU:"", "STATUS File1":"—", "STATUS File2":r.STATUS, "CLOSED BY":"", DATE:"" });
   });
   const combined = closed.concat(extra);
-  fullRows = combined.slice(); // store all rows (unfiltered)
+  fullRows = combined.slice();
   filteredRows = fullRows.slice();
   showResults(filteredRows);
 };
@@ -296,7 +452,6 @@ function createFilterRow(headers){
   tr.className = "filter-row";
   headers.forEach(h=>{
     const th = document.createElement("th");
-    // create input
     const inp = document.createElement("input");
     inp.setAttribute("placeholder", "Filter...");
     inp.addEventListener("input", applyFiltersDebounced);
@@ -317,9 +472,7 @@ function applyFilters(){
   if(!table) return;
   const inputs = table.querySelectorAll(".filter-row input");
   const filters = Array.from(inputs).map(i => norm(i.value));
-  // columns order in showResults: TASK, SBU, HELPDESK, DXC, CLOSED BY, CLOSED DATE, ACTION TAKEN
   filteredRows = fullRows.filter(row=>{
-    // map row to array of comparable strings
     const vals = [
       norm(row.TASK||""),
       norm(row.SBU||""),
@@ -327,17 +480,14 @@ function applyFilters(){
       norm(row["STATUS File2"]||""),
       norm(row["CLOSED BY"]||""),
       norm(row.DATE||""),
-      "" // action taken column doesn't have a data string to filter; leave empty
+      ""
     ];
-    // test each filter: filter value must be contained in corresponding val
     for(let i=0;i<filters.length;i++){
       if(filters[i] && !vals[i].includes(filters[i])) return false;
     }
     return true;
   });
-  // re-render results with filteredRows
   renderResultsTable(filteredRows);
-  // update downloadable rows to filteredRows
   window.mismatchRows = filteredRows;
   document.getElementById("download").disabled = filteredRows.length === 0;
 }
@@ -353,10 +503,8 @@ function showResults(rows){
 function renderResultsTable(rows){
   const res=document.getElementById("results"); res.innerHTML="";
   const tbl=document.createElement("table");
-  // Headers: TASK, SBU, HELPDESK, DXC, CLOSED BY, CLOSED DATE, ACTION TAKEN
   tbl.innerHTML="<thead><tr><th>TASK</th><th>SBU</th><th>HELPDESK</th><th>DXC</th><th>CLOSED BY</th><th>CLOSED DATE</th><th>ACTION TAKEN</th></tr></thead>";
   const tb=document.createElement("tbody");
-  // insert filter row under the header
   const thead = tbl.querySelector("thead");
   const headers = ["TASK","SBU","HELPDESK","DXC","CLOSED BY","CLOSED DATE","ACTION TAKEN"];
   const filterRow = createFilterRow(headers);
@@ -373,7 +521,6 @@ function renderResultsTable(rows){
   const total=document.createElement("div");
   total.style.marginTop="10px"; total.style.fontWeight="600";
   total.textContent=`Total Tasks: ${rows.length}`; res.appendChild(total);
-  // ensure filter inputs start empty
   const inputs = tbl.querySelectorAll(".filter-row input");
   inputs.forEach(i=>i.value="");
 }
@@ -398,7 +545,6 @@ document.getElementById("popupCloseTop").onclick=hidePopup;
 
 document.getElementById("download").onclick=()=>{
   if(!window.mismatchRows?.length) return;
-  // create export-friendly rows (exclude action column & include SBU)
   const exportRows = window.mismatchRows.map(r=>{
     return {
       TASK: r.TASK,
@@ -421,7 +567,6 @@ document.getElementById("clear").onclick=()=>{
   document.getElementById("results").innerHTML="";
   document.getElementById("compare").disabled=true;
   document.getElementById("download").disabled=true;
-  // clear maps
   for(const k in histMap) delete histMap[k];
   for(const k in dateMap) delete dateMap[k];
   for(const k in sbuMap) delete sbuMap[k];
