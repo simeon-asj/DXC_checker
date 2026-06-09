@@ -458,7 +458,7 @@ body.dark .filter-row input { border-color:#444; }
   </div>
 </div>
 
-<p class="footer">DXC CHECKER&nbsp;1.0.7 &nbsp; © 2025, Arvin Jusay</p>
+<p class="footer">DXC CHECKER&nbsp;1.0.6 &nbsp; © 2025, Arvin Jusay</p>
 </div>
 
 <script>
@@ -639,14 +639,11 @@ document.getElementById("compare").onclick=()=>{
         });
     }
   }
+  
+  // Option A: Kukunin lang ang mga totoong mismatches mula sa File 1 (Closed sa Helpdesk pero iba sa DXC)
   const closed=mism.filter(r=>norm(r["STATUS File1"]).includes("closed"));
-  const extra=[];
-  data2.forEach(r=>{
-    if(!m1[r.TASK] && ["work in progress","pending"].some(t=>norm(r.STATUS).includes(t)))
-      extra.push({ TASK:r.TASK, SBU:"", "STATUS File1":"—", "STATUS File2":r.STATUS, "CLOSED BY":"", DATE:"" });
-  });
-  const combined = closed.concat(extra);
-  fullRows = combined.slice();
+  
+  fullRows = closed.slice();
   filteredRows = fullRows.slice();
   showResults(filteredRows);
 };
