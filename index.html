@@ -138,22 +138,6 @@
   z-index: -2;
 }
 
-@keyframes glitch-1 {
-  0%, 100% { transform: translate(0); }
-  20% { transform: translate(-2px, 2px); }
-  40% { transform: translate(-2px, -2px); }
-  60% { transform: translate(2px, 2px); }
-  80% { transform: translate(2px, -2px); }
-}
-
-@keyframes glitch-2 {
-  0%, 100% { transform: translate(0); }
-  20% { transform: translate(2px, -2px); }
-  40% { transform: translate(2px, 2px); }
-  60% { transform: translate(-2px, -2px); }
-  80% { transform: translate(-2px, 2px); }
-}
-
 .input-group {
   margin-bottom: 20px;
   position: relative;
@@ -399,7 +383,6 @@ body.dark .filter-row input { border-color:#444; }
 </head>
 <body>
 
-<!-- Login Page -->
 <div id="loginPage">
   <div class="login-container">
     <div class="login-title">
@@ -430,7 +413,6 @@ body.dark .filter-row input { border-color:#444; }
   </div>
 </div>
 
-<!-- Main Application -->
 <div id="mainApp">
 <div class="top-bar">
   <span id="modeText" class="mode-label">Switch to Dark Mode</span>
@@ -476,7 +458,7 @@ body.dark .filter-row input { border-color:#444; }
   </div>
 </div>
 
-<p class="footer">DXC CHECKER&nbsp;1.0.6 &nbsp; © 2025, Arvin Jusay</p>
+<p class="footer">DXC CHECKER&nbsp;1.0.7 &nbsp; © 2025, Arvin Jusay</p>
 </div>
 
 <script>
@@ -694,7 +676,14 @@ function applyFilters(){
   if(!table) return;
   const inputs = table.querySelectorAll(".filter-row input");
   const filters = Array.from(inputs).map(i => norm(i.value));
-  filteredRows = fullRows.filter(row=>{
+  
+  const tbody = table.querySelector("tbody");
+  const trs = tbody.querySelectorAll("tr");
+  
+  let visibleCount = 0;
+  filteredRows = [];
+
+  fullRows.forEach((row, index) => {
     const vals = [
       norm(row.TASK||""),
       norm(row.SBU||""),
@@ -704,14 +693,29 @@ function applyFilters(){
       norm(row.DATE||""),
       ""
     ];
+    
+    let matches = true;
     for(let i=0;i<filters.length;i++){
-      if(filters[i] && !vals[i].includes(filters[i])) return false;
+      if(filters[i] && !vals[i].includes(filters[i])) {
+        matches = false;
+        break;
+      }
     }
-    return true;
+    
+    if(matches) {
+      trs[index].style.display = "";
+      filteredRows.push(row);
+      visibleCount++;
+    } else {
+      trs[index].style.display = "none";
+    }
   });
-  renderResultsTable(filteredRows);
+
   window.mismatchRows = filteredRows;
   document.getElementById("download").disabled = filteredRows.length === 0;
+  
+  const totalDiv = document.querySelector("#results .total-count");
+  if(totalDiv) totalDiv.textContent = `Total Tasks: ${visibleCount}`;
 }
 
 function showResults(rows){
@@ -741,10 +745,9 @@ function renderResultsTable(rows){
   });
   tbl.appendChild(tb); res.appendChild(tbl);
   const total=document.createElement("div");
+  total.className = "total-count";
   total.style.marginTop="10px"; total.style.fontWeight="600";
   total.textContent=`Total Tasks: ${rows.length}`; res.appendChild(total);
-  const inputs = tbl.querySelectorAll(".filter-row input");
-  inputs.forEach(i=>i.value="");
 }
 
 function showRemarks(task,btn){
@@ -804,4 +807,3 @@ toggle.addEventListener("change", () => {
 </script>
 </body>
 </html>
-
