@@ -458,7 +458,7 @@ body.dark .filter-row input { border-color:#444; }
   </div>
 </div>
 
-<p class="footer">DXC CHECKER&nbsp;1.0.6 &nbsp; © 2025, Arvin Jusay</p>
+<p class="footer">DXC CHECKER&nbsp;1.0.9 &nbsp; © 2026, Arvin Jusay</p>
 </div>
 
 <script>
@@ -511,14 +511,11 @@ function handleLogin(event) {
   const errorMsg = document.getElementById('loginError');
   const loginBtn = document.getElementById('loginBtn');
   
-  // Show loading spinner
   loginBtn.classList.add('loading');
   loginBtn.disabled = true;
   
-  // Simulate loading delay
   setTimeout(() => {
     if (username === 'arvin' && password === 'asjarvin') {
-      // Save to localStorage if Remember Me is checked
       if (rememberMe) {
         localStorage.setItem('rememberedUser', username);
       } else {
@@ -540,11 +537,30 @@ function handleLogin(event) {
 
 // Main Application Code
 let data1=null, data2=null, highlightedRow=null;
-const histMap={}, dateMap={}, sbuMap={};
+const histMap={}, dateMap={}, sbuMap={}, storeMap={};
 let fullRows = [];
 let filteredRows = [];
 
 function norm(s){return (s||"").toString().toLowerCase().replace(/\s+/g," ").trim();}
+
+// Dynamic and Universal Clean up para sa kahit anong Brand / SBU prefix (JB, CK, MI, YS, GW, atbp.)
+function formatStoreCombined(sbu, storeName) {
+  if (!sbu && !storeName) return "";
+  let cleanName = (storeName || "").toString().trim();
+  let cleanSbu = (sbu || "").toString().trim();
+  
+  if (cleanSbu) {
+    // Kinukuha natin ang dalawang letra ng brand mula sa simula ng SBU (e.g., "CK" mula sa "CK3233", "JB" mula sa "JB0628")
+    const brandPrefix = cleanSbu.substring(0, 2);
+    
+    // Dynamic Regex: Tinatanggal ang brand prefix na may o walang kasunod na hyphen/space sa unahan ng Store Name
+    // Halimbawa: "JB-POTOTAN" -> "POTOTAN", "CK-SM" -> "SM", "MI0359" -> gumagana pa rin nang maayos
+    const dynamicRegex = new RegExp(`^${brandPrefix}\\s*-\\s*|^${brandPrefix}\\s*`, 'i');
+    cleanName = cleanName.replace(dynamicRegex, "");
+  }
+  
+  return `${cleanSbu} ${cleanName}`.trim();
+}
 
 function excelDateToJS(serial) {
   if (serial == null || serial === "") return "";
@@ -591,8 +607,14 @@ function handleFile(f,is1,cb){
         const hist=row["Historical Remarks"]||row["HISTORICAL REMARKS"]||row["Historical remarks"]||"";
         const date=excelDateToJS(row["LAST UPDATE"]||row["Last Update"]||row["Last updated"]||"");
         const storeCode = row["STORE CODE"]||row["Store Code"]||row["STORECODE"]||row["StoreCode"]||"";
-        if(t){ histMap[t]=hist; dateMap[t]=date||""; sbuMap[t]=storeCode||""; }
-        return { TASK:t, STATUS:row["CALL STATUS"]||row["Call Status"]||row["CALLSTATUS"]||"", CLOSED_BY:row["CLOSED BY"]||row["Closed By"]||"", SBU: storeCode||"" };
+        const storeName = row["STORE NAME"]||row["Store Name"]||row["STORENAME"]||row["StoreName"]||"";
+        if(t){ 
+          histMap[t]=hist; 
+          dateMap[t]=date||""; 
+          sbuMap[t]=storeCode||""; 
+          storeMap[t]=storeName||"";
+        }
+        return { TASK:t, STATUS:row["CALL STATUS"]||row["Call Status"]||row["CALLSTATUS"]||"", CLOSED_BY:row["CLOSED BY"]||row["Closed By"]||"", SBU: storeCode||"", STORE_NAME: storeName||"" };
       } else {
         return { TASK:row["NUMBER"]||row["Number"]||row["number"]||"", STATUS:row["STATE"]||row["State"]||row["status"]||"", CREATED:row["CREATED"]||row["Created"]||row["Opened"]||"" };
       }
@@ -631,7 +653,7 @@ document.getElementById("compare").onclick=()=>{
       if(s1!==s2)
         mism.push({
           TASK:t,
-          SBU: m1[t].SBU || "",
+          STORE_COMBINED: formatStoreCombined(m1[t].SBU, m1[t].STORE_NAME),
           "STATUS File1":m1[t].STATUS,
           "STATUS File2":m2[t].status,
           "CLOSED BY":m1[t].CLOSED_BY,
@@ -640,7 +662,6 @@ document.getElementById("compare").onclick=()=>{
     }
   }
   
-  // Option A: Kukunin lang ang mga totoong mismatches mula sa File 1 (Closed sa Helpdesk pero iba sa DXC)
   const closed=mism.filter(r=>norm(r["STATUS File1"]).includes("closed"));
   
   fullRows = closed.slice();
@@ -651,12 +672,14 @@ document.getElementById("compare").onclick=()=>{
 function createFilterRow(headers){
   const tr = document.createElement("tr");
   tr.className = "filter-row";
-  headers.forEach(h=>{
+  headers.forEach((h, index)=>{
     const th = document.createElement("th");
-    const inp = document.createElement("input");
-    inp.setAttribute("placeholder", "Filter...");
-    inp.addEventListener("input", applyFiltersDebounced);
-    th.appendChild(inp);
+    if(index < headers.length - 1){
+      const inp = document.createElement("input");
+      inp.setAttribute("placeholder", "Filter...");
+      inp.addEventListener("input", applyFiltersDebounced);
+      th.appendChild(inp);
+    }
     tr.appendChild(th);
   });
   return tr;
@@ -683,12 +706,11 @@ function applyFilters(){
   fullRows.forEach((row, index) => {
     const vals = [
       norm(row.TASK||""),
-      norm(row.SBU||""),
+      norm(row.STORE_COMBINED||""),
       norm(row["STATUS File1"]||""),
       norm(row["STATUS File2"]||""),
       norm(row["CLOSED BY"]||""),
-      norm(row.DATE||""),
-      ""
+      norm(row.DATE||"")
     ];
     
     let matches = true;
@@ -726,16 +748,16 @@ function showResults(rows){
 function renderResultsTable(rows){
   const res=document.getElementById("results"); res.innerHTML="";
   const tbl=document.createElement("table");
-  tbl.innerHTML="<thead><tr><th>TASK</th><th>SBU</th><th>HELPDESK</th><th>DXC</th><th>CLOSED BY</th><th>CLOSED DATE</th><th>ACTION TAKEN</th></tr></thead>";
+  tbl.innerHTML="<thead><tr><th>TASK</th><th>STORE NAME</th><th>HELPDESK</th><th>DXC</th><th>CLOSED BY</th><th>CLOSED DATE</th><th>ACTION TAKEN</th></tr></thead>";
   const tb=document.createElement("tbody");
   const thead = tbl.querySelector("thead");
-  const headers = ["TASK","SBU","HELPDESK","DXC","CLOSED BY","CLOSED DATE","ACTION TAKEN"];
+  const headers = ["TASK","STORE NAME","HELPDESK","DXC","CLOSED BY","CLOSED DATE","ACTION TAKEN"];
   const filterRow = createFilterRow(headers);
   thead.appendChild(filterRow);
 
   rows.forEach(r=>{
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${r.TASK}</td><td>${r.SBU||""}</td><td>${r["STATUS File1"]}</td><td>${r["STATUS File2"]}</td>
+    tr.innerHTML=`<td>${r.TASK}</td><td>${r.STORE_COMBINED||""}</td><td>${r["STATUS File1"]}</td><td>${r["STATUS File2"]}</td>
                   <td>${r["CLOSED BY"]}</td><td>${r.DATE||""}</td>
                   <td><button class="btn-primary" onclick="showRemarks('${encodeURIComponent(r.TASK)}',this)">View</button></td>`;
     tb.appendChild(tr);
@@ -770,7 +792,7 @@ document.getElementById("download").onclick=()=>{
   const exportRows = window.mismatchRows.map(r=>{
     return {
       TASK: r.TASK,
-      SBU: r.SBU || "",
+      "STORE NAME": r.STORE_COMBINED || "",
       "STATUS File1": r["STATUS File1"] || "",
       "STATUS File2": r["STATUS File2"] || "",
       "CLOSED BY": r["CLOSED BY"] || "",
@@ -792,6 +814,7 @@ document.getElementById("clear").onclick=()=>{
   for(const k in histMap) delete histMap[k];
   for(const k in dateMap) delete dateMap[k];
   for(const k in sbuMap) delete sbuMap[k];
+  for(const k in storeMap) delete storeMap[k];
 };
 
 const toggle = document.getElementById("toggle");
