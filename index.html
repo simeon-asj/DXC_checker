@@ -61,12 +61,8 @@
     transform: translateY(0) translateX(0);
     opacity: 0;
   }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
   100% {
     transform: translateY(-100vh) translateX(50px);
     opacity: 0;
@@ -279,7 +275,7 @@ body{
 }
 body.dark{background:var(--bg-dark);color:#eee}
 
-h1 { text-align: center; }
+h1 { text-align: center; margin-bottom: 25px; }
 h1 span { 
   margin-bottom:8px;
   font-size:1.5em;
@@ -290,6 +286,17 @@ h1 span {
 h1 .helpdesk { background:linear-gradient(90deg,#ff0000,#ff6b6b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 h1 .amp { color:black; -webkit-text-stroke:1px white; }
 h1 .dxc { background:linear-gradient(90deg,#007bff,#00c6ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+
+/* Danger title variation para sa dynamic count indicator */
+h1.danger-indicator {
+  font-size: 1.8em;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--danger);
+}
+body.dark h1.danger-indicator {
+  color: #ff4d4d;
+}
 
 .top-bar{
   display:flex;
@@ -422,7 +429,7 @@ body.dark .filter-row input { border-color:#444; }
   </label>
 </div>
 
-<h1>
+<h1 id="dynamicHeader">
   <span class="helpdesk">HELPDESK</span>
   <span class="amp">↔</span>
   <span class="dxc">DXC CHECKER</span>
@@ -458,7 +465,7 @@ body.dark .filter-row input { border-color:#444; }
   </div>
 </div>
 
-<p class="footer">DXC CHECKER&nbsp;1.0.9 &nbsp; © 2026, Arvin Jusay</p>
+<p class="footer">DXC CHECKER&nbsp;1.1.0 &nbsp; © 2025, Arvin Jusay</p>
 </div>
 
 <script>
@@ -543,18 +550,14 @@ let filteredRows = [];
 
 function norm(s){return (s||"").toString().toLowerCase().replace(/\s+/g," ").trim();}
 
-// Dynamic and Universal Clean up para sa kahit anong Brand / SBU prefix (JB, CK, MI, YS, GW, atbp.)
+// Universal Clean up engine para sa lahat ng Brand/SBU prefixes (JB, CK, MI, YS, GW, atbp.)
 function formatStoreCombined(sbu, storeName) {
   if (!sbu && !storeName) return "";
   let cleanName = (storeName || "").toString().trim();
   let cleanSbu = (sbu || "").toString().trim();
   
   if (cleanSbu) {
-    // Kinukuha natin ang dalawang letra ng brand mula sa simula ng SBU (e.g., "CK" mula sa "CK3233", "JB" mula sa "JB0628")
     const brandPrefix = cleanSbu.substring(0, 2);
-    
-    // Dynamic Regex: Tinatanggal ang brand prefix na may o walang kasunod na hyphen/space sa unahan ng Store Name
-    // Halimbawa: "JB-POTOTAN" -> "POTOTAN", "CK-SM" -> "SM", "MI0359" -> gumagana pa rin nang maayos
     const dynamicRegex = new RegExp(`^${brandPrefix}\\s*-\\s*|^${brandPrefix}\\s*`, 'i');
     cleanName = cleanName.replace(dynamicRegex, "");
   }
@@ -666,6 +669,9 @@ document.getElementById("compare").onclick=()=>{
   
   fullRows = closed.slice();
   filteredRows = fullRows.slice();
+  
+  // I-update ang header base sa total initial mismatches
+  updateHeaderCount(filteredRows.length);
   showResults(filteredRows);
 };
 
@@ -733,13 +739,28 @@ function applyFilters(){
   window.mismatchRows = filteredRows;
   document.getElementById("download").disabled = filteredRows.length === 0;
   
+  // Dynamic header updates habang nag-fe-filter
+  updateHeaderCount(visibleCount);
+  
   const totalDiv = document.querySelector("#results .total-count");
   if(totalDiv) totalDiv.textContent = `Total Tasks: ${visibleCount}`;
 }
 
+// Helper function para sa pagbabago ng H1 style at text sa itaas
+function updateHeaderCount(count) {
+  const header = document.getElementById("dynamicHeader");
+  header.className = "danger-indicator";
+  header.textContent = `TOTAL TASK NOT CLOSED: ${count}`;
+}
+
 function showResults(rows){
   const res=document.getElementById("results"); res.innerHTML="";
-  if(!rows.length){ res.textContent="ALL TICKET FROM HELPDESK WAS CLOSED."; window.mismatchRows = []; document.getElementById("download").disabled=true; return; }
+  if(!rows.length){ 
+    res.textContent="ALL TICKET FROM HELPDESK WAS CLOSED."; 
+    window.mismatchRows = []; 
+    document.getElementById("download").disabled=true; 
+    return; 
+  }
   renderResultsTable(rows);
   window.mismatchRows = rows;
   document.getElementById("download").disabled=false;
@@ -804,6 +825,7 @@ document.getElementById("download").onclick=()=>{
   XLSX.utils.book_append_sheet(wb,ws,"Closed_Mismatches");
   XLSX.writeFile(wb,"closed_mismatches.xlsx");
 };
+
 document.getElementById("clear").onclick=()=>{
   data1=data2=null; window.mismatchRows=null; fullRows=[]; filteredRows=[];
   document.getElementById("drop1").textContent="Drop Jollibee Revised Excel here or click";
@@ -811,6 +833,12 @@ document.getElementById("clear").onclick=()=>{
   document.getElementById("results").innerHTML="";
   document.getElementById("compare").disabled=true;
   document.getElementById("download").disabled=true;
+  
+  // I-reset ang Header pabalik sa default logo style kapag nag-clear
+  const header = document.getElementById("dynamicHeader");
+  header.className = "";
+  header.innerHTML = `<span class="helpdesk">HELPDESK</span> <span class="amp">↔</span> <span class="dxc">DXC CHECKER</span>`;
+  
   for(const k in histMap) delete histMap[k];
   for(const k in dateMap) delete dateMap[k];
   for(const k in sbuMap) delete sbuMap[k];
