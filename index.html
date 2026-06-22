@@ -9,273 +9,24 @@
 :root{
   --primary:#2563eb;
   --primary-dark:#1e40af;
-  --bg-light:#f1f5f9;
-  --bg-dark:#121212;
-  --card-light:#ffffff;
-  --card-dark:#1e1e1e;
-  --danger:#dc2626;
-  --danger-dark:#b91c1c;
+  --bg-dark:#0f172a; 
+  --card-dark:#1e293b; 
+  --danger:#ef4444;   
+  --danger-dark:#dc2626;
+  --success:#10b981;
+  --success-dark:#059669;
 }
 
-/* Login Page Styles */
-#loginPage {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-#loginPage::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: 
-    radial-gradient(ellipse at 20% 30%, rgba(220, 38, 38, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 70%, rgba(107, 114, 128, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(220, 38, 38, 0.08) 0%, transparent 60%);
-  animation: smokeMove 20s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes smokeMove {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(10px, -10px) scale(1.05); }
-  66% { transform: translate(-10px, 10px) scale(0.95); }
-}
-
-/* Floating Particles */
-.particle {
-  position: absolute;
-  background: rgba(220, 38, 38, 0.3);
-  border-radius: 50%;
-  pointer-events: none;
-  animation: float 15s infinite ease-in-out;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0) translateX(0);
-    opacity: 0;
-  }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% {
-    transform: translateY(-100vh) translateX(50px);
-    opacity: 0;
-  }
-}
-
-.login-container {
-  background: rgba(30, 30, 30, 0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(220, 38, 38, 0.3);
-  border-radius: 16px;
-  padding: 40px;
-  width: 90%;
-  max-width: 380px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  z-index: 1;
-}
-
-.login-title {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #fff;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  min-height: 40px;
-}
-
-.login-title .typing-text {
-  display: inline-block;
-  overflow: hidden;
-  border-right: 3px solid #dc2626;
-  white-space: nowrap;
-  animation: typing 3s steps(30) 1s 1 normal both, blink 0.75s step-end infinite;
-}
-
-@keyframes typing {
-  from { width: 0; }
-  to { width: 100%; }
-}
-
-@keyframes blink {
-  50% { border-color: transparent; }
-}
-
-.glitch {
-  position: relative;
-  display: inline-block;
-}
-
-.glitch::before,
-.glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0.8;
-}
-
-.glitch::before {
-  animation: glitch-1 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
-  color: #dc2626;
-  z-index: -1;
-}
-
-.glitch::after {
-  animation: glitch-2 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse infinite;
-  color: #6b7280;
-  z-index: -2;
-}
-
-.input-group {
-  margin-bottom: 20px;
-  position: relative;
-}
-
-.input-group label {
-  display: block;
-  color: #d1d5db;
-  font-size: 13px;
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
-.input-group input {
-  width: 100%;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(220, 38, 38, 0.3);
-  border-radius: 8px;
-  color: #fff;
-  font-size: 14px;
-  transition: all 0.3s;
-  box-sizing: border-box;
-}
-
-.input-group input[type="password"] {
-  padding-right: 45px;
-}
-
-.input-group input:focus {
-  outline: none;
-  border-color: #dc2626;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-}
-
-.password-toggle {
-  position: absolute;
-  right: 12px;
-  top: 38px;
-  cursor: pointer;
-  color: #9ca3af;
-  font-size: 18px;
-  user-select: none;
-  transition: color 0.2s;
-}
-
-.password-toggle:hover {
-  color: #dc2626;
-}
-
-.remember-me {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
-  color: #d1d5db;
-  font-size: 13px;
-}
-
-.remember-me input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  accent-color: #dc2626;
-}
-
-.login-btn {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  margin-top: 10px;
-  position: relative;
-}
-
-.login-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
-}
-
-.login-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.login-btn .spinner {
-  display: none;
-  width: 16px;
-  height: 16px;
-  border: 2px solid #fff;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-  margin: 0 auto;
-}
-
-.login-btn.loading .spinner {
-  display: block;
-}
-
-.login-btn.loading .btn-text {
-  display: none;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.login-error {
-  color: #fca5a5;
-  font-size: 13px;
-  text-align: center;
-  margin-top: 15px;
-  display: none;
-  animation: shake 0.4s;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-10px); }
-  75% { transform: translateX(10px); }
-}
-
-/* Main App Styles */
+/* Permanent Dark Mode Styles */
 body{
   font-family:"Segoe UI",Tahoma,Verdana,sans-serif;
-  background:var(--bg-light);
-  color:#222;
+  background:var(--bg-dark);
+  color:#f8fafc;
   padding:20px;
   margin:0;
-  transition:background .3s,color .3s;
 }
-body.dark{background:var(--bg-dark);color:#eee}
 
-h1 { text-align: center; margin-bottom: 25px; }
+h1 { text-align: center; margin-bottom: 25px; margin-top: 10px; }
 h1 span { 
   margin-bottom:8px;
   font-size:1.5em;
@@ -283,49 +34,30 @@ h1 span {
   letter-spacing:7.5px;
   display:inline-block;
 }
-h1 .helpdesk { background:linear-gradient(90deg,#ff0000,#ff6b6b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+h1 .helpdesk { background:linear-gradient(90deg,#ef4444,#f87171); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 h1 .amp { color:black; -webkit-text-stroke:1px white; }
-h1 .dxc { background:linear-gradient(90deg,#007bff,#00c6ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+h1 .dxc { background:linear-gradient(90deg,#3b82f6,#60a5fa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 
-/* Danger title variation para sa dynamic count indicator */
 h1.danger-indicator {
   font-size: 1.8em;
   font-weight: 800;
   letter-spacing: 2px;
-  color: var(--danger);
-}
-body.dark h1.danger-indicator {
-  color: #ff4d4d;
+  color: #f87171;
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+  text-align: center;
 }
 
-.top-bar{
-  display:flex;
-  justify-content:flex-end;
-  align-items:center;
-  gap:10px;
-  margin-bottom:20px;
+h1.success-indicator {
+  font-size: 1.8em;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #34d399;
+  text-align: center;
 }
-.mode-label{ font-size:14px; font-weight:600; }
-
-.theme-switch {
-  position: relative; width: 60px; height: 30px; display: inline-block;
-}
-.theme-switch input { opacity: 0; width: 0; height: 0; }
-.slider {
-  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-  background: #ccc; transition: background .3s; border-radius: 34px;
-}
-.slider:before {
-  content: ""; position: absolute; height: 24px; width: 24px;
-  left: 3px; bottom: 3px; background: white; transition: transform .3s;
-  border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,.3);
-}
-.theme-switch input:checked + .slider { background: var(--primary); }
-.theme-switch input:checked + .slider:before { transform: translateX(30px); }
 
 button{
   padding:8px 16px; border:none; border-radius:8px; font-size:14px;
-  cursor:pointer; transition:background .2s,transform .1s;
+  font-weight: 600; cursor:pointer; transition:background .2s,transform .1s;
 }
 button:hover:not(:disabled){transform:translateY(-1px);}
 button:disabled{opacity:.5;cursor:not-allowed;}
@@ -333,101 +65,212 @@ button:disabled{opacity:.5;cursor:not-allowed;}
 .btn-primary:hover:not(:disabled){background:var(--primary-dark);}
 .btn-danger{background:var(--danger);color:#fff;}
 .btn-danger:hover:not(:disabled){background:var(--danger-dark);}
-.card{
-  background:var(--card-light); border-radius:12px; padding:25px; margin:0 auto 20px;
-  max-width:600px; box-shadow:0 2px 8px rgba(0,0,0,.08); text-align:center; transition:background .3s;
-}
-body.dark .card{background:var(--card-dark);}
-.drop{
-  border:2px dashed #94a3b8; border-radius:10px; padding:30px; cursor:pointer;
-  transition:border-color .2s,background .2s;
-}
-.drop.dragover{border-color:var(--primary);background:rgba(37,99,235,0.05);}
-body.dark .drop.dragover{background:rgba(37,99,235,0.2);}
 
+.btn-success{background:var(--success);color:#fff;}
+.btn-success:hover:not(:disabled){background:var(--success-dark);box-shadow:0 4px 12px rgba(16,185,129,0.2);}
+
+.btn-mini {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 4px;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+.card{
+  background:var(--card-dark); border-radius:12px; padding:25px; margin:0 auto 20px;
+  max-width:600px; box-shadow:0 4px 6px -1px rgba(0,0,0,.2), 0 2px 4px -1px rgba(0,0,0,.1); text-align:center;
+}
+
+/* PROGRESS BAR CONTAINER */
+.progress-container {
+  width: 100%;
+  background-color: #334155;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  display: none;
+  overflow: hidden;
+}
+.progress-bar {
+  width: 0%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--primary), #60a5fa);
+  border-radius: 10px;
+  transition: width 0.2s ease-out;
+}
+
+.drop{
+  border:2px dashed #475569; border-radius:10px; padding:30px; cursor:pointer;
+  transition:all .3s ease-in-out;
+  background:transparent;
+  color:#cbd5e1;
+  text-align: center;
+}
+.drop.dragover{
+  border-color:var(--primary);
+  background:rgba(37,99,235,0.15);
+  transform:scale(1.01);
+  border-style:solid;
+}
+
+.drop.loaded {
+  border-color:var(--success);
+  border-style:solid;
+  background:rgba(16,185,129,0.1);
+  color:#34d399;
+}
+
+/* VERTICAL LIST DOWN DASHBOARD - CENTERED */
+.dashboard-container {
+  margin: 30px auto 20px;
+  max-width: 450px;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  backdrop-filter: blur(8px);
+}
+.dashboard-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 1.2px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.agent-pill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.agent-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.agent-pill:hover {
+  transform: translateX(2px);
+  border-color: #60a5fa;
+  box-shadow: 0 2px 6px rgba(96, 165, 250, 0.2);
+}
+
+.pill-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  padding: 8px 12px;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.pill-count {
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  padding: 8px 16px;
+  min-width: 24px;
+  text-align: center;
+  border-left: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.agent-pill:hover .pill-count {
+  background: var(--danger);
+  color: #fff;
+}
+
+/* TABLE CENTERED CELL TEXT */
 table{
   width:100%; border-collapse:collapse; margin-top:20px;
-  background:var(--card-light); border-radius:12px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.08);
+  background:var(--card-dark); border-radius:12px; overflow:hidden; box-shadow:0 4px 6px -1px rgba(0,0,0,.2);
 }
-body.dark table{background:var(--card-dark);}
-th,td{ padding:12px 14px; border-bottom:1px solid #e2e8f0; text-align:left; font-size:14px; }
-body.dark th,body.dark td{border-color:#333;}
-th{ background:var(--primary); color:#fff; font-weight:600; }
+th,td{ padding:12px 14px; border-bottom:1px solid #334155; text-align:center; font-size:14px; }
+th{ background:var(--primary); color:#fff; font-weight:600; text-align:center; }
+
+.clickable-cell {
+  cursor: pointer;
+}
+
+#toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #0f172a;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 30px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 11000;
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+#toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
 
 #overlay{
   position:fixed;inset:0;
-  background:rgba(0,0,0,0.45);
+  background:rgba(0,0,0,0.6);
   display:none;
   z-index:9998;
+  backdrop-filter: blur(4px);
 }
 #popup{
   position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-  background:var(--card-light); color:inherit; border-radius:12px;
+  background:var(--card-dark); color:inherit; border-radius:12px;
   max-width:700px; width:90%; max-height:80vh; overflow-y:auto;
-  display:none; z-index:9999; box-shadow:0 8px 30px rgba(0,0,0,.4);
+  display:none; z-index:9999; box-shadow:0 20px 25px -5px rgba(0,0,0,0.3);
 }
-body.dark #popup{background:var(--card-dark);}
 #popupHeader{
   position:sticky; top:0; background:var(--primary); color:#fff;
   padding:14px; font-weight:600; text-align:center; border-radius:12px 12px 0 0;
 }
 #popupCloseTop{ position:absolute; top:10px; right:16px; background:none; border:none; color:#fff; font-size:22px; cursor:pointer; }
-#popupContent{ padding:18px; white-space:pre-wrap; word-break:break-word; }
-.highlight-row{ background:rgba(220,38,38,.25)!important; }
-.footer{ text-align:center; margin-top:40px; opacity:.7; font-size:13px; }
+#popupContent{ padding:18px; white-space:pre-wrap; word-break:break-word; font-size: 14px; line-height: 1.5; text-align: left; }
+.highlight-row{ background:rgba(239,68,68,.15)!important; }
+.footer{ text-align:center; margin-top:40px; opacity:.4; font-size:13px; letter-spacing: 0.5px; }
 #popupTitle { text-transform: uppercase; font-weight: bold; }
 
 .filter-row input {
-  width:100%; box-sizing:border-box; padding:8px; border-radius:6px; border:1px solid #cbd5e1;
-  background:transparent; color:inherit;
+  width:100%; box-sizing:border-box; padding:8px; border-radius:6px; border:1px solid #334155;
+  background:transparent; color:inherit; text-align:center;
 }
-body.dark .filter-row input { border-color:#444; }
 
-#mainApp {
-  display: none;
+.table-footer-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
 }
 </style>
 </head>
 <body>
 
-<div id="loginPage">
-  <div class="login-container">
-    <div class="login-title">
-      <span class="typing-text">
-        <span class="glitch" data-text="HD ↔ DXC">HD ↔ DXC</span>
-      </span>
-    </div>
-    <form id="loginForm" onsubmit="return handleLogin(event)">
-      <div class="input-group">
-        <label>USERNAME</label>
-        <input type="text" id="username" autocomplete="username" required>
-      </div>
-      <div class="input-group">
-        <label>PASSWORD</label>
-        <input type="password" id="password" autocomplete="current-password" required>
-        <span class="password-toggle" onclick="togglePassword()">👁️</span>
-      </div>
-      <div class="remember-me">
-        <input type="checkbox" id="rememberMe">
-        <label for="rememberMe" style="cursor:pointer; margin:0;">Remember Me</label>
-      </div>
-      <button type="submit" class="login-btn" id="loginBtn">
-        <span class="btn-text">LOGIN</span>
-        <div class="spinner"></div>
-      </button>
-      <div class="login-error" id="loginError">Invalid username or password</div>
-    </form>
-  </div>
-</div>
-
 <div id="mainApp">
-<div class="top-bar">
-  <span id="modeText" class="mode-label">Switch to Dark Mode</span>
-  <label class="theme-switch">
-    <input type="checkbox" id="toggle">
-    <span class="slider"></span>
-  </label>
-</div>
 
 <h1 id="dynamicHeader">
   <span class="helpdesk">HELPDESK</span>
@@ -436,22 +279,29 @@ body.dark .filter-row input { border-color:#444; }
 </h1>
 
 <div class="card">
+  <div id="progressCont1" class="progress-container">
+    <div id="progressBar1" class="progress-bar"></div>
+  </div>
   <div id="drop1" class="drop">Drop <b>Jollibee Revised Excel</b> here or click</div>
   <input type="file" id="file1" accept=".xls,.xlsx" style="display:none">
 </div>
 
 <div class="card">
+  <div id="progressCont2" class="progress-container">
+    <div id="progressBar2" class="progress-bar"></div>
+  </div>
   <div id="drop2" class="drop">Drop <b>DXC Excel</b> here or click</div>
   <input type="file" id="file2" accept=".xls,.xlsx" style="display:none">
 </div>
 
-<div style="text-align:center;margin-bottom:20px;">
+<div style="text-align:center;margin-bottom:25px;">
   <button id="compare" class="btn-primary" disabled>Compare</button>
-  <button id="download" class="btn-primary" disabled>Download Mismatches</button>
+  <button id="download" class="btn-success" disabled>Download Mismatches</button>
   <button id="clear" class="btn-danger">Clear Contents</button>
 </div>
 
 <div id="results"></div>
+<div id="dashboardSection"></div>
 
 <div id="overlay"></div>
 <div id="popup">
@@ -465,84 +315,12 @@ body.dark .filter-row input { border-color:#444; }
   </div>
 </div>
 
-<p class="footer">DXC CHECKER&nbsp;1.1.0 &nbsp; © 2025, Arvin Jusay</p>
+<div id="toast">📋 Tasks copied to clipboard!</div>
+
+<p class="footer">DXC CHECKER&nbsp;1.2.0 &nbsp; © 2025, Arvin Jusay</p>
 </div>
 
 <script>
-// Create floating particles
-function createParticles() {
-  const loginPage = document.getElementById('loginPage');
-  for (let i = 0; i < 15; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    const size = Math.random() * 4 + 2;
-    particle.style.width = size + 'px';
-    particle.style.height = size + 'px';
-    particle.style.left = Math.random() * 100 + '%';
-    particle.style.bottom = '-20px';
-    particle.style.animationDelay = Math.random() * 15 + 's';
-    particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
-    loginPage.appendChild(particle);
-  }
-}
-createParticles();
-
-// Toggle Password Visibility
-function togglePassword() {
-  const passwordInput = document.getElementById('password');
-  const toggle = document.querySelector('.password-toggle');
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-    toggle.textContent = '🙈';
-  } else {
-    passwordInput.type = 'password';
-    toggle.textContent = '👁️';
-  }
-}
-
-// Check for saved login on page load
-window.addEventListener('load', () => {
-  const remembered = localStorage.getItem('rememberedUser');
-  if (remembered === 'arvin') {
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'block';
-  }
-});
-
-// Login Logic
-function handleLogin(event) {
-  event.preventDefault();
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  const rememberMe = document.getElementById('rememberMe').checked;
-  const errorMsg = document.getElementById('loginError');
-  const loginBtn = document.getElementById('loginBtn');
-  
-  loginBtn.classList.add('loading');
-  loginBtn.disabled = true;
-  
-  setTimeout(() => {
-    if (username === 'arvin' && password === 'asjarvin') {
-      if (rememberMe) {
-        localStorage.setItem('rememberedUser', username);
-      } else {
-        localStorage.removeItem('rememberedUser');
-      }
-      
-      document.getElementById('loginPage').style.display = 'none';
-      document.getElementById('mainApp').style.display = 'block';
-      errorMsg.style.display = 'none';
-    } else {
-      errorMsg.style.display = 'block';
-      loginBtn.classList.remove('loading');
-      loginBtn.disabled = false;
-    }
-  }, 1000);
-  
-  return false;
-}
-
-// Main Application Code
 let data1=null, data2=null, highlightedRow=null;
 const histMap={}, dateMap={}, sbuMap={}, storeMap={};
 let fullRows = [];
@@ -550,7 +328,16 @@ let filteredRows = [];
 
 function norm(s){return (s||"").toString().toLowerCase().replace(/\s+/g," ").trim();}
 
-// Universal Clean up engine para sa lahat ng Brand/SBU prefixes (JB, CK, MI, YS, GW, atbp.)
+function getBaseTaskId(task) {
+  if (!task) return "";
+  const cleaned = task.toString().trim().toUpperCase();
+  const patternMatch = cleaned.match(/^(TASK|SR)\d{7}/i);
+  if (patternMatch) {
+    return patternMatch[0].toLowerCase();
+  }
+  return cleaned.toLowerCase();
+}
+
 function formatStoreCombined(sbu, storeName) {
   if (!sbu && !storeName) return "";
   let cleanName = (storeName || "").toString().trim();
@@ -585,6 +372,134 @@ function excelDateToJS(serial) {
   return serial.toString();
 }
 
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2500);
+}
+
+function copyCellText(encodedText, label) {
+  if (!encodedText) return;
+  const decoded = decodeURIComponent(encodedText).trim();
+  navigator.clipboard.writeText(decoded).then(() => {
+    showToast(`📋 Copied ${label}: "${decoded}"`);
+  }).catch(err => {
+    console.error("Failed to copy text: ", err);
+  });
+}
+
+// SIMULATED LOADING ANIMATION
+function simulateLoading(pContId, pBarId, callback) {
+  const pCont = document.getElementById(pContId);
+  const pBar = document.getElementById(pBarId);
+  
+  pCont.style.display = "block";
+  pBar.style.width = "0%";
+  
+  let width = 0;
+  const interval = setInterval(() => {
+    if (width >= 100) {
+      clearInterval(interval);
+      setTimeout(() => {
+        pCont.style.display = "none";
+        pBar.style.width = "0%";
+        callback();
+      }, 200);
+    } else {
+      width += Math.floor(Math.random() * 15) + 5;
+      if (width > 100) width = 100;
+      pBar.style.width = width + "%";
+    }
+  }, 80);
+}
+
+function copyTasksByTech(techName) {
+  if (!techName) return;
+  const targetTech = techName.trim();
+  
+  const tasksToCopy = filteredRows
+    .filter(r => (r["CLOSED BY"] || "").toString().trim() === targetTech)
+    .map(r => r.TASK)
+    .filter(Boolean);
+    
+  if (tasksToCopy.length === 0) {
+    showToast(`No tasks found for ${targetTech}`);
+    return;
+  }
+  
+  const textToCopy = tasksToCopy.join(", ");
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    showToast(`📋 Copied ${tasksToCopy.length} task(s) for ${targetTech}!`);
+  }).catch(err => {
+    console.error("Failed to copy text: ", err);
+  });
+}
+
+function copyAllCurrentTasks() {
+  const tasksToCopy = filteredRows.map(r => r.TASK).filter(Boolean);
+  if (tasksToCopy.length === 0) {
+    showToast("No active tasks to copy.");
+    return;
+  }
+  const textToCopy = tasksToCopy.join(", ");
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    showToast(`📋 Copied ALL ${tasksToCopy.length} visible task numbers!`);
+  }).catch(err => {
+    console.error("Failed to copy text: ", err);
+  });
+}
+
+function renderAgentDashboard(rows) {
+  const container = document.getElementById("dashboardSection");
+  container.innerHTML = "";
+  
+  if (!rows || rows.length === 0) return;
+  
+  const counts = {};
+  rows.forEach(r => {
+    const tech = (r["CLOSED BY"] || "").toString().trim() || "UNASSIGNED / UNKNOWN";
+    counts[tech] = (counts[tech] || 0) + 1;
+  });
+  
+  const sortedAgents = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  
+  const dashboardContainer = document.createElement("div");
+  dashboardContainer.className = "dashboard-container";
+  
+  const title = document.createElement("div");
+  title.className = "dashboard-title";
+  title.innerHTML = "📊 Agent Mismatch Performance Summary";
+  dashboardContainer.appendChild(title);
+  
+  const pillList = document.createElement("div");
+  pillList.className = "agent-pill-list";
+  
+  sortedAgents.forEach(([agentName, count]) => {
+    const pill = document.createElement("div");
+    pill.className = "agent-pill";
+    pill.title = `Click to copy all ${count} mismatch tasks under ${agentName}`;
+    pill.onclick = () => copyTasksByTech(agentName);
+    
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "pill-name";
+    nameSpan.textContent = agentName;
+    
+    const countSpan = document.createElement("span");
+    countSpan.className = "pill-count";
+    countSpan.textContent = count;
+    
+    pill.appendChild(nameSpan);
+    pill.appendChild(countSpan);
+    pillList.appendChild(pill);
+  });
+  
+  dashboardContainer.appendChild(pillList);
+  container.appendChild(dashboardContainer);
+}
+
 function readSheet(sheet,patterns){
   const aoa=XLSX.utils.sheet_to_json(sheet,{header:1,raw:true,defval:""});
   let hdr=-1;
@@ -607,15 +522,17 @@ function handleFile(f,is1,cb){
     const mapped=js.map(row=>{
       if(is1){
         const t=row["HO IT TICKET #"]||row["Ho IT Ticket #"]||row["HO IT Ticket"]||row["HO IT Ticket No."]||row["HO IT TICKET"]||row["Ho IT Ticket"]||"";
-        const hist=row["Historical Remarks"]||row["HISTORICAL REMARKS"]||row["Historical remarks"]||"";
+        const htmlRemarks=row["Historical Remarks"]||row["HISTORICAL REMARKS"]||row["Historical remarks"]||"";
         const date=excelDateToJS(row["LAST UPDATE"]||row["Last Update"]||row["Last updated"]||"");
         const storeCode = row["STORE CODE"]||row["Store Code"]||row["STORECODE"]||row["StoreCode"]||"";
         const storeName = row["STORE NAME"]||row["Store Name"]||row["STORENAME"]||row["StoreName"]||"";
+        
+        const baseKey = getBaseTaskId(t);
         if(t){ 
-          histMap[t]=hist; 
-          dateMap[t]=date||""; 
-          sbuMap[t]=storeCode||""; 
-          storeMap[t]=storeName||"";
+          histMap[baseKey]=htmlRemarks; 
+          dateMap[baseKey]=date||""; 
+          sbuMap[baseKey]=storeCode||""; 
+          storeMap[baseKey]=storeName||"";
         }
         return { TASK:t, STATUS:row["CALL STATUS"]||row["Call Status"]||row["CALLSTATUS"]||"", CLOSED_BY:row["CLOSED BY"]||row["Closed By"]||"", SBU: storeCode||"", STORE_NAME: storeName||"" };
       } else {
@@ -627,8 +544,9 @@ function handleFile(f,is1,cb){
   r.readAsArrayBuffer(f);
 }
 
-function setupDrop(id,input,is1,setter){
+function setupDrop(id,input,is1,pCont,pBar,setter){
   const dz=document.getElementById(id), inp=document.getElementById(input);
+  
   dz.onclick=()=>inp.click();
   dz.ondragover=e=>{ e.preventDefault(); dz.classList.add("dragover"); };
   dz.ondragleave=()=>dz.classList.remove("dragover");
@@ -637,30 +555,52 @@ function setupDrop(id,input,is1,setter){
     if(e.dataTransfer.files.length) read(e.dataTransfer.files[0]);
   };
   inp.onchange=e=>{ if(e.target.files.length) read(e.target.files[0]); };
-  function read(f){ handleFile(f,is1,(data,name)=>{
-    setter(data); dz.textContent="Loaded: "+name;
-    document.getElementById("compare").disabled=!(data1&&data2);
-  }); }
+  
+  function read(f){ 
+    dz.style.pointerEvents = "none"; // block interactions during load
+    simulateLoading(pCont, pBar, () => {
+      handleFile(f,is1,(data,name)=>{
+        setter(data); 
+        dz.classList.add("loaded");
+        dz.innerHTML = `✓ Loaded: <b>${name}</b>`;
+        dz.style.pointerEvents = "auto";
+        document.getElementById("compare").disabled=!(data1&&data2);
+      });
+    });
+  }
 }
-setupDrop("drop1","file1",true,d=>data1=d);
-setupDrop("drop2","file2",false,d=>data2=d);
+setupDrop("drop1","file1",true,"progressCont1","progressBar1",d=>data1=d);
+setupDrop("drop2","file2",false,"progressCont2","progressBar2",d=>data2=d);
 
 document.getElementById("compare").onclick=()=>{
   const m1={}, m2={};
-  data1.forEach(r=>{ if(r.TASK) m1[r.TASK]=r; });
-  data2.forEach(r=>{ if(r.TASK) m2[r.TASK]={status:norm(r.STATUS)}; });
+  
+  data1.forEach(r=>{ 
+    if(r.TASK) {
+      const baseId = getBaseTaskId(r.TASK);
+      m1[baseId]=r; 
+    }
+  });
+  
+  data2.forEach(r=>{ 
+    if(r.TASK) {
+      const baseId = getBaseTaskId(r.TASK);
+      m2[baseId]={status:norm(r.STATUS), origTask:r.TASK}; 
+    }
+  });
+  
   const mism=[];
-  for(const t in m1){
-    if(m2[t]){
-      const s1=norm(m1[t].STATUS), s2=m2[t].status;
+  for(const baseKey in m1){
+    if(m2[baseKey]){
+      const s1=norm(m1[baseKey].STATUS), s2=m2[baseKey].status;
       if(s1!==s2)
         mism.push({
-          TASK:t,
-          STORE_COMBINED: formatStoreCombined(m1[t].SBU, m1[t].STORE_NAME),
-          "STATUS File1":m1[t].STATUS,
-          "STATUS File2":m2[t].status,
-          "CLOSED BY":m1[t].CLOSED_BY,
-          DATE:dateMap[t]||"" 
+          TASK: m1[baseKey].TASK, 
+          STORE_COMBINED: formatStoreCombined(m1[baseKey].SBU, m1[baseKey].STORE_NAME),
+          "STATUS File1":m1[baseKey].STATUS,
+          "STATUS File2":m2[baseKey].status,
+          "CLOSED BY":m1[baseKey].CLOSED_BY,
+          DATE:dateMap[baseKey]||"" 
         });
     }
   }
@@ -670,9 +610,9 @@ document.getElementById("compare").onclick=()=>{
   fullRows = closed.slice();
   filteredRows = fullRows.slice();
   
-  // I-update ang header base sa total initial mismatches
   updateHeaderCount(filteredRows.length);
   showResults(filteredRows);
+  renderAgentDashboard(filteredRows);
 };
 
 function createFilterRow(headers){
@@ -739,24 +679,30 @@ function applyFilters(){
   window.mismatchRows = filteredRows;
   document.getElementById("download").disabled = filteredRows.length === 0;
   
-  // Dynamic header updates habang nag-fe-filter
   updateHeaderCount(visibleCount);
+  renderAgentDashboard(filteredRows);
   
-  const totalDiv = document.querySelector("#results .total-count");
+  const totalDiv = document.querySelector("#results .total-label");
   if(totalDiv) totalDiv.textContent = `Total Tasks: ${visibleCount}`;
+  
+  const copyBtn = document.getElementById("copyAllBtn");
+  if(copyBtn) copyBtn.disabled = visibleCount === 0;
 }
 
-// Helper function para sa pagbabago ng H1 style at text sa itaas
 function updateHeaderCount(count) {
   const header = document.getElementById("dynamicHeader");
-  header.className = "danger-indicator";
-  header.textContent = `TOTAL TASK NOT CLOSED: ${count}`;
+  if (count === 0) {
+    header.className = "success-indicator";
+    header.textContent = "ALL TICKETS FROM HELPDESK WERE CLOSED.";
+  } else {
+    header.className = "danger-indicator";
+    header.textContent = `TOTAL TASK NOT CLOSED: ${count}`;
+  }
 }
 
 function showResults(rows){
   const res=document.getElementById("results"); res.innerHTML="";
   if(!rows.length){ 
-    res.textContent="ALL TICKET FROM HELPDESK WAS CLOSED."; 
     window.mismatchRows = []; 
     document.getElementById("download").disabled=true; 
     return; 
@@ -778,22 +724,49 @@ function renderResultsTable(rows){
 
   rows.forEach(r=>{
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${r.TASK}</td><td>${r.STORE_COMBINED||""}</td><td>${r["STATUS File1"]}</td><td>${r["STATUS File2"]}</td>
-                  <td>${r["CLOSED BY"]}</td><td>${r.DATE||""}</td>
-                  <td><button class="btn-primary" onclick="showRemarks('${encodeURIComponent(r.TASK)}',this)">View</button></td>`;
+    const techSupport = ((r["CLOSED BY"] || "")).toString().trim();
+    const storeCombined = (r.STORE_COMBINED || "").toString().trim();
+    const closedDate = (r.DATE || "").toString().trim();
+
+    tr.innerHTML=`<td>${r.TASK}</td>
+                  <td class="clickable-cell" onclick="copyCellText('${encodeURIComponent(storeCombined)}', 'Store Name')">${storeCombined}</td>
+                  <td>${r["STATUS File1"]}</td>
+                  <td>${r["STATUS File2"]}</td>
+                  <td>${techSupport}</td>
+                  <td class="clickable-cell" onclick="copyCellText('${encodeURIComponent(closedDate)}', 'Closed Date')">${closedDate}</td>
+                  <td><button class="btn-primary" onclick="showRemarks('${encodeURIComponent(getBaseTaskId(r.TASK))}',this)">View</button></td>`;
     tb.appendChild(tr);
   });
   tbl.appendChild(tb); res.appendChild(tbl);
-  const total=document.createElement("div");
-  total.className = "total-count";
-  total.style.marginTop="10px"; total.style.fontWeight="600";
-  total.textContent=`Total Tasks: ${rows.length}`; res.appendChild(total);
+  
+  const controlFooter = document.createElement("div");
+  controlFooter.className = "table-footer-controls";
+  
+  const totalSpan = document.createElement("span");
+  totalSpan.className = "total-label";
+  totalSpan.style.fontWeight = "600";
+  totalSpan.textContent = `Total Tasks: ${rows.length}`;
+  
+  const copyAllBtn = document.createElement("button");
+  copyAllBtn.id = "copyAllBtn";
+  copyAllBtn.className = "btn-primary btn-mini";
+  copyAllBtn.textContent = "📋 Copy All Tasks";
+  copyAllBtn.onclick = copyAllCurrentTasks;
+  
+  const leftGroup = document.createElement("div");
+  leftGroup.appendChild(totalSpan);
+  leftGroup.appendChild(copyAllBtn);
+  
+  controlFooter.appendChild(leftGroup);
+  res.appendChild(controlFooter);
 }
 
 function showRemarks(task,btn){
   const t=decodeURIComponent(task);
   document.getElementById("popupTitle").textContent=`Historical Remarks from ${t}`;
-  document.getElementById("popupContent").textContent=histMap[t]||"No historical remarks found.";
+  
+  document.getElementById("popupContent").textContent = histMap[t] || "No historical remarks found.";
+  
   document.getElementById("popup").style.display="block";
   document.getElementById("overlay").style.display="block";
   document.body.style.overflow="hidden";
@@ -828,13 +801,24 @@ document.getElementById("download").onclick=()=>{
 
 document.getElementById("clear").onclick=()=>{
   data1=data2=null; window.mismatchRows=null; fullRows=[]; filteredRows=[];
-  document.getElementById("drop1").textContent="Drop Jollibee Revised Excel here or click";
-  document.getElementById("drop2").textContent="Drop DXC Excel here or click";
+  
+  const d1 = document.getElementById("drop1");
+  d1.classList.remove("loaded");
+  d1.innerHTML = "Drop <b>Jollibee Revised Excel</b> here or click";
+  document.getElementById("progressCont1").style.display = "none";
+  document.getElementById("progressBar1").style.width = "0%";
+  
+  const d2 = document.getElementById("drop2");
+  d2.classList.remove("loaded");
+  d2.innerHTML = "Drop <b>DXC Excel</b> here or click";
+  document.getElementById("progressCont2").style.display = "none";
+  document.getElementById("progressBar2").style.width = "0%";
+  
   document.getElementById("results").innerHTML="";
+  document.getElementById("dashboardSection").innerHTML="";
   document.getElementById("compare").disabled=true;
   document.getElementById("download").disabled=true;
   
-  // I-reset ang Header pabalik sa default logo style kapag nag-clear
   const header = document.getElementById("dynamicHeader");
   header.className = "";
   header.innerHTML = `<span class="helpdesk">HELPDESK</span> <span class="amp">↔</span> <span class="dxc">DXC CHECKER</span>`;
@@ -844,14 +828,6 @@ document.getElementById("clear").onclick=()=>{
   for(const k in sbuMap) delete sbuMap[k];
   for(const k in storeMap) delete storeMap[k];
 };
-
-const toggle = document.getElementById("toggle");
-const modeText = document.getElementById("modeText");
-toggle.addEventListener("change", () => {
-  const dark = toggle.checked;
-  document.body.classList.toggle("dark", dark);
-  modeText.textContent = dark ? "Switch to Light Mode" : "Switch to Dark Mode";
-});
 </script>
 </body>
 </html>
