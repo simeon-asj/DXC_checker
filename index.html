@@ -317,7 +317,7 @@ th{ background:var(--primary); color:#fff; font-weight:600; text-align:center; }
 
 <div id="toast">📋 Tasks copied to clipboard!</div>
 
-<p class="footer">DXC CHECKER&nbsp;1.2.0 &nbsp; © 2025, Arvin Jusay</p>
+<p class="footer">DXC CHECKER&nbsp;1.2.0 &nbsp; © 2026, Arvin Jusay</p>
 </div>
 
 <script>
@@ -557,7 +557,7 @@ function setupDrop(id,input,is1,pCont,pBar,setter){
   inp.onchange=e=>{ if(e.target.files.length) read(e.target.files[0]); };
   
   function read(f){ 
-    dz.style.pointerEvents = "none"; // block interactions during load
+    dz.style.pointerEvents = "none";
     simulateLoading(pCont, pBar, () => {
       handleFile(f,is1,(data,name)=>{
         setter(data); 
@@ -773,6 +773,7 @@ function showRemarks(task,btn){
   if(highlightedRow) highlightedRow.classList.remove("highlight-row");
   highlightedRow=btn.closest("tr"); highlightedRow.classList.add("highlight-row");
 }
+
 function hidePopup(){
   document.getElementById("popup").style.display="none";
   document.getElementById("overlay").style.display="none";
@@ -780,6 +781,16 @@ function hidePopup(){
   if(highlightedRow){ highlightedRow.classList.remove("highlight-row"); highlightedRow=null; }
 }
 document.getElementById("popupCloseTop").onclick=hidePopup;
+
+// KEYDOWN LISTENER FOR ESCAPE KEY
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" || e.keyCode === 27) {
+    const popup = document.getElementById("popup");
+    if (popup && popup.style.display === "block") {
+      hidePopup();
+    }
+  }
+});
 
 document.getElementById("download").onclick=()=>{
   if(!window.mismatchRows?.length) return;
